@@ -1,41 +1,23 @@
+import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-const NAVY = '#0B1629';
-const RED = '#DC2626';
-const RED_PRESSED = '#B91C1C';
-const SECONDARY = '#1E3A5F';
-const SECONDARY_PRESSED = '#162D4A';
+import { Button } from '@/components/Button';
+import { ScreenContainer } from '@/components/ScreenContainer';
+import { TEXT_DIM, TEXT_MUTED, TEXT_PRIMARY } from '@/constants/colors';
 
 export default function HomeScreen() {
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenContainer>
       <View style={styles.header}>
         <Text style={styles.title}>SnowSafe</Text>
         <Text style={styles.tagline}>Post-Crash Head Impact Assistant</Text>
       </View>
 
       <View style={styles.buttons}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            styles.primaryButton,
-            pressed && { backgroundColor: RED_PRESSED },
-          ]}
-          onPress={() => {}}
-        >
-          <Text style={styles.primaryButtonText}>START TRIAGE</Text>
-        </Pressable>
-
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            styles.secondaryButton,
-            pressed && { backgroundColor: SECONDARY_PRESSED },
-          ]}
-          onPress={() => {}}
-        >
-          <Text style={styles.secondaryButtonText}>View Recovery Log</Text>
+        <Button label="START TRIAGE" variant="primary" onPress={() => router.push('/triage')} />
+        <Button label="View Recovery Log" variant="secondary" onPress={() => router.push('/log')} />
+        <Pressable onPress={() => router.push('/contacts')} hitSlop={12}>
+          <Text style={styles.contactsLink}>Emergency Contacts &amp; Resort Info</Text>
         </Pressable>
       </View>
 
@@ -45,16 +27,11 @@ export default function HomeScreen() {
           consult a medical professional.
         </Text>
       </View>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: NAVY,
-    paddingHorizontal: 24,
-  },
   header: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -64,12 +41,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 42,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: TEXT_PRIMARY,
     letterSpacing: 1,
   },
   tagline: {
     fontSize: 16,
-    color: '#94A3B8',
+    color: TEXT_MUTED,
     marginTop: 8,
   },
   buttons: {
@@ -77,29 +54,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 20,
   },
-  button: {
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 72,
-    paddingHorizontal: 24,
-  },
-  primaryButton: {
-    backgroundColor: RED,
-  },
-  primaryButtonText: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    fontWeight: 'bold',
-    letterSpacing: 1.5,
-  },
-  secondaryButton: {
-    backgroundColor: SECONDARY,
-  },
-  secondaryButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
+  contactsLink: {
+    color: TEXT_MUTED,
+    fontSize: 15,
     fontWeight: '600',
+    textAlign: 'center',
+    textDecorationLine: 'underline',
   },
   footer: {
     paddingBottom: 16,
@@ -107,7 +67,7 @@ const styles = StyleSheet.create({
   },
   disclaimer: {
     fontSize: 12,
-    color: '#64748B',
+    color: TEXT_DIM,
     textAlign: 'center',
     lineHeight: 18,
   },
