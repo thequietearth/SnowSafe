@@ -9,6 +9,7 @@ interface ButtonProps {
   onPress: () => void;
   variant?: ButtonVariant;
   style?: StyleProp<ViewStyle>;
+  selected?: boolean;
 }
 
 const VARIANT_COLORS: Record<ButtonVariant, { background: string; pressed: string }> = {
@@ -17,12 +18,15 @@ const VARIANT_COLORS: Record<ButtonVariant, { background: string; pressed: strin
   secondary: { background: SECONDARY, pressed: SECONDARY_PRESSED },
 };
 
-export function Button({ label, onPress, variant = 'primary', style }: ButtonProps) {
+export function Button({ label, onPress, variant = 'primary', style, selected }: ButtonProps) {
   const colors = VARIANT_COLORS[variant];
   const isPrimary = variant === 'primary' || variant === 'danger';
 
   return (
     <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={selected === undefined ? undefined : { selected }}
       style={({ pressed }) => [
         styles.button,
         { backgroundColor: colors.background },

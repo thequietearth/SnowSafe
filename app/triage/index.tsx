@@ -89,6 +89,7 @@ export default function TriageScreen() {
               key={option.value}
               label={option.label}
               variant={selectedValue === option.value ? 'primary' : 'secondary'}
+              selected={selectedValue === option.value}
               onPress={() =>
                 dispatch({ type: 'ANSWER', questionId: question.id, optionValue: option.value })
               }

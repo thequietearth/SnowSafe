@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -23,6 +24,12 @@ export default function ResultsScreen() {
     }
     getSessionById(id).then((found) => setSession(found ?? null));
   }, [id]);
+
+  useEffect(() => {
+    if (session?.outcomeTier === 'EMERGENCY') {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    }
+  }, [session]);
 
   return (
     <ScreenContainer>

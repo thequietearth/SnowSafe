@@ -48,6 +48,8 @@ export default function RecoveryLogScreen() {
             const tierInfo = TIER_INFO[item.outcomeTier];
             return (
               <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`${formatDate(item.createdAt)}, ${tierInfo.shortLabel}`}
                 style={styles.row}
                 onPress={() => router.push(`/log/${item.id}`)}
               >
