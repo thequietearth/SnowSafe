@@ -4,25 +4,7 @@ import { Linking, StyleSheet, Text, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { NAVY, TEXT_MUTED, TEXT_PRIMARY } from '@/constants/colors';
-
-interface ContactEntry {
-  label: string;
-  detail: string;
-  phoneNumber: string;
-}
-
-const CONTACTS: ContactEntry[] = [
-  {
-    label: 'Emergency Services',
-    detail: 'Life-threatening emergency',
-    phoneNumber: '911',
-  },
-  {
-    label: 'Ski Patrol',
-    detail: 'On-mountain injury response — update with your resort’s number',
-    phoneNumber: '911',
-  },
-];
+import { CONTACTS } from '@/lib/contacts';
 
 function callNumber(phoneNumber: string) {
   Linking.openURL(`tel:${phoneNumber}`);
