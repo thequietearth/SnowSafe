@@ -1,4 +1,5 @@
-import { computeOutcome } from './triageLogic';
+import { computeOutcome, isTriageComplete } from './triageLogic';
+import { TRIAGE_QUESTIONS } from './triageQuestions';
 
 describe('computeOutcome', () => {
   it('returns MONITOR when no answers are given', () => {
@@ -49,5 +50,39 @@ describe('computeOutcome', () => {
     ]);
     expect(result.tier).toBe('MONITOR');
     expect(result.reasons).toEqual([]);
+  });
+});
+
+describe('isTriageComplete', () => {
+  it('is not complete before any answers are given', () => {
+    expect(isTriageComplete([])).toBe(false);
+  });
+
+  it('continues after a SEEK_CARE answer', () => {
+    expect(
+      isTriageComplete([{ questionId: 'headache_severity', optionValue: 'moderate' }])
+    ).toBe(false);
+  });
+
+  it('stops as soon as any EMERGENCY option is chosen', () => {
+    const emergencyAnswers = TRIAGE_QUESTIONS.flatMap((q) =>
+      q.options
+        .filter((o) => o.tier === 'EMERGENCY')
+        .map((o) => ({ questionId: q.id, optionValue: o.value }))
+    );
+    expect(emergencyAnswers.length).toBeGreaterThan(0);
+    for (const answer of emergencyAnswers) {
+      expect(isTriageComplete([answer])).toBe(true);
+    }
+  });
+
+  it('completes only once every question is answered when there is no emergency', () => {
+    const answers = TRIAGE_QUESTIONS.map((q) => ({
+      questionId: q.id,
+      optionValue: q.options[0].value,
+    }));
+    expect(computeOutcome(answers).tier).toBe('MONITOR');
+    expect(isTriageComplete(answers.slice(0, -1))).toBe(false);
+    expect(isTriageComplete(answers)).toBe(true);
   });
 });

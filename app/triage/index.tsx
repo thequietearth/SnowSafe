@@ -6,7 +6,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { Button } from '@/components/Button';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { RED, TEXT_MUTED, TEXT_PRIMARY } from '@/constants/colors';
-import { computeOutcome } from '@/lib/triageLogic';
+import { computeOutcome, isTriageComplete } from '@/lib/triageLogic';
 import { TRIAGE_QUESTIONS } from '@/lib/triageQuestions';
 import { saveSession } from '@/lib/storage';
 import type { TriageAnswer, TriageSession } from '@/lib/types';
@@ -39,7 +39,7 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
 export default function TriageScreen() {
   const [state, dispatch] = useReducer(wizardReducer, { index: 0, answers: [] });
   const [saving, setSaving] = useState(false);
-  const isComplete = state.index >= TOTAL;
+  const isComplete = isTriageComplete(state.answers);
 
   useEffect(() => {
     if (!isComplete || saving) return;
@@ -54,8 +54,13 @@ export default function TriageScreen() {
         outcomeTier: outcome.tier,
         outcomeReasons: outcome.reasons,
       };
-      await saveSession(session);
-      router.replace(`/results?id=${session.id}`);
+      let saved = true;
+      try {
+        await saveSession(session);
+      } catch {
+        saved = false;
+      }
+      router.replace(`/results?id=${session.id}&saved=${saved}`);
     })();
   }, [isComplete, saving, state.answers]);
 

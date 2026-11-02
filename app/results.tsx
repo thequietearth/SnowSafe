@@ -8,13 +8,13 @@ import { ScreenContainer } from '@/components/ScreenContainer';
 import { TriageSessionSummary } from '@/components/TriageSessionSummary';
 import { NAVY, TEXT_MUTED, TEXT_PRIMARY } from '@/constants/colors';
 import { CONTACTS } from '@/lib/contacts';
-import { getSessionById } from '@/lib/storage';
+import { loadResult } from '@/lib/storage';
 import type { TriageSession } from '@/lib/types';
 
 const EMERGENCY_CONTACT = CONTACTS[0];
 
 export default function ResultsScreen() {
-  const { id } = useLocalSearchParams<{ id?: string }>();
+  const { id, saved } = useLocalSearchParams<{ id?: string; saved?: string }>();
   const [session, setSession] = useState<TriageSession | null | undefined>(undefined);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function ResultsScreen() {
       setSession(null);
       return;
     }
-    getSessionById(id).then((found) => setSession(found ?? null));
+    loadResult(id).then((found) => setSession(found ?? null));
   }, [id]);
 
   useEffect(() => {
@@ -62,6 +62,11 @@ export default function ResultsScreen() {
             <TriageSessionSummary session={session} />
           </ScrollView>
           <View style={styles.actions}>
+            {saved === 'false' && (
+              <Text style={styles.saveWarning}>
+                This result couldn’t be saved to your Recovery Log.
+              </Text>
+            )}
             {session.outcomeTier === 'EMERGENCY' && (
               <Button
                 label={`Call ${EMERGENCY_CONTACT.phoneNumber}`}
@@ -91,6 +96,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingVertical: 20,
+  },
+  saveWarning: {
+    fontSize: 14,
+    color: TEXT_MUTED,
+    textAlign: 'center',
   },
   actions: {
     gap: 16,

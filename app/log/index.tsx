@@ -4,7 +4,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { NAVY, TEXT_MUTED, TEXT_PRIMARY } from '@/constants/colors';
-import { getAllSessions } from '@/lib/storage';
+import { getAllSessions, hasUnreadableSessions } from '@/lib/storage';
 import { TIER_INFO } from '@/lib/tierInfo';
 import type { TriageSession } from '@/lib/types';
 
@@ -13,11 +13,20 @@ function formatDate(iso: string) {
 }
 
 export default function RecoveryLogScreen() {
-  const [sessions, setSessions] = useState<TriageSession[] | undefined>(undefined);
+  const [sessions, setSessions] = useState<TriageSession[] | null | undefined>(undefined);
+  const [hasUnreadable, setHasUnreadable] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
-      getAllSessions().then(setSessions);
+      (async () => {
+        try {
+          const found = await getAllSessions();
+          setHasUnreadable(await hasUnreadableSessions());
+          setSessions(found);
+        } catch {
+          setSessions(null);
+        }
+      })();
     }, [])
   );
 
@@ -33,7 +42,19 @@ export default function RecoveryLogScreen() {
         }}
       />
 
-      {sessions && sessions.length === 0 && (
+      {hasUnreadable && (
+        <Text style={styles.unreadableNotice}>
+          Some earlier entries couldn’t be read and aren’t shown.
+        </Text>
+      )}
+
+      {sessions === null && (
+        <View style={styles.empty}>
+          <Text style={styles.emptyText}>We couldn’t load your Recovery Log.</Text>
+        </View>
+      )}
+
+      {sessions && sessions.length === 0 && !hasUnreadable && (
         <View style={styles.empty}>
           <Text style={styles.emptyText}>No triage sessions yet.</Text>
         </View>
@@ -67,6 +88,12 @@ export default function RecoveryLogScreen() {
 }
 
 const styles = StyleSheet.create({
+  unreadableNotice: {
+    fontSize: 14,
+    color: TEXT_MUTED,
+    textAlign: 'center',
+    paddingTop: 12,
+  },
   empty: {
     flex: 1,
     alignItems: 'center',

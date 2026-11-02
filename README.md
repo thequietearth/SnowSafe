@@ -18,7 +18,7 @@ The triage questionnaire and its scoring rules are a **reasonable starting point
 
 ## Features
 
-- **Triage questionnaire** — a 10-question symptom checklist covering concussion red flags (loss of consciousness, vomiting, seizure, neck/spine symptoms, headache severity, confusion, speech, dizziness, pupils/fluid).
+- **Triage questionnaire** — a 10-question symptom checklist covering concussion red flags (loss of consciousness, vomiting, seizure, neck/spine symptoms, headache severity, confusion, speech, dizziness, pupils/fluid). It stops at the first answer that calls for emergency help and goes straight to the result.
 - **Rule-based recommendation** — answers are scored to one of three tiers (`EMERGENCY`, `SEEK_CARE`, `MONITOR`) using max-severity aggregation, with the specific triggering answers shown as reasons.
 - **Recovery log** — every completed triage is saved on-device, browsable by date and tier, with editable notes per entry.
 - **Emergency contacts** — quick tap-to-call access to emergency services and ski patrol.
@@ -51,7 +51,7 @@ Then open the project in [Expo Go](https://expo.dev/go) by scanning the QR code,
 npm test
 ```
 
-Unit tests cover the triage scoring logic in `lib/triageLogic.ts` — tier thresholds, multi-answer max-severity aggregation, and handling of unknown question/option ids.
+Unit tests cover the triage scoring logic in `lib/triageLogic.ts` — tier thresholds, multi-answer max-severity aggregation, handling of unknown question/option ids, and stopping early on an emergency answer — and, in `lib/storage.ts`, that a finished result can still be loaded when storage fails and that unreadable data is set aside so new sessions can still be saved.
 
 ## Project structure
 
