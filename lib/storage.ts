@@ -4,6 +4,9 @@ import type { TriageSession } from './types';
 
 const STORAGE_KEY = 'snowsafe.triageSessions.v1';
 
+// The session just finished, kept in memory so its result can be shown even if AsyncStorage fails.
+let latestSession: TriageSession | undefined;
+
 async function readAll(): Promise<TriageSession[]> {
   const raw = await AsyncStorage.getItem(STORAGE_KEY);
   return raw ? (JSON.parse(raw) as TriageSession[]) : [];
@@ -23,7 +26,17 @@ export async function getSessionById(id: string): Promise<TriageSession | undefi
   return sessions.find((s) => s.id === id);
 }
 
+export async function loadResult(id: string): Promise<TriageSession | undefined> {
+  if (latestSession?.id === id) return latestSession;
+  try {
+    return await getSessionById(id);
+  } catch {
+    return undefined;
+  }
+}
+
 export async function saveSession(session: TriageSession): Promise<void> {
+  latestSession = session;
   const sessions = await readAll();
   sessions.push(session);
   await writeAll(sessions);

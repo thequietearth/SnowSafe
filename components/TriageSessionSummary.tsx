@@ -37,6 +37,11 @@ export function TriageSessionSummary({ session }: TriageSessionSummaryProps) {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Answers</Text>
+        {session.answers.length < TRIAGE_QUESTIONS.length && (
+          <Text style={styles.skippedNote}>
+            Remaining questions were skipped so you can get help right away.
+          </Text>
+        )}
         {session.answers.map((answer) => {
           const question = TRIAGE_QUESTIONS.find((q) => q.id === answer.questionId);
           const option = question?.options.find((o) => o.value === answer.optionValue);
@@ -86,6 +91,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: TEXT_PRIMARY,
     lineHeight: 20,
+  },
+  skippedNote: {
+    fontSize: 13,
+    color: TEXT_MUTED,
   },
   answerRow: {
     gap: 2,

@@ -33,3 +33,7 @@ export function computeOutcome(answers: TriageAnswer[]): TriageOutcome {
 
   return { tier, reasons: reasonsByTier[tier] };
 }
+
+export function isTriageComplete(answers: TriageAnswer[]): boolean {
+  return answers.length >= TRIAGE_QUESTIONS.length || computeOutcome(answers).tier === 'EMERGENCY';
+}
