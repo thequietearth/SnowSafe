@@ -51,7 +51,7 @@ Then open the project in [Expo Go](https://expo.dev/go) by scanning the QR code,
 npm test
 ```
 
-Unit tests cover the triage scoring logic in `lib/triageLogic.ts` — tier thresholds, multi-answer max-severity aggregation, handling of unknown question/option ids, and stopping early on an emergency answer — and, in `lib/storage.ts`, that a finished result can still be loaded when storage fails.
+Unit tests cover the triage scoring logic in `lib/triageLogic.ts` — tier thresholds, multi-answer max-severity aggregation, handling of unknown question/option ids, and stopping early on an emergency answer — and, in `lib/storage.ts`, that a finished result can still be loaded when storage fails and that unreadable data is set aside so new sessions can still be saved.
 
 ## Project structure
 

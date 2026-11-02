@@ -25,18 +25,27 @@ export default function LogEntryScreen() {
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
-    getSessionById(id).then((found) => {
-      setSession(found ?? null);
-      setNotes(found?.notes ?? '');
-    });
+    getSessionById(id)
+      .then((found) => {
+        setSession(found ?? null);
+        setNotes(found?.notes ?? '');
+      })
+      .catch(() => setSession(null));
   }, [id]);
 
   async function handleSaveNotes() {
     setSaving(true);
-    await updateSessionNotes(id, notes);
-    setSaving(false);
+    setActionError(null);
+    try {
+      await updateSessionNotes(id, notes);
+    } catch {
+      setActionError('Your notes couldn’t be saved.');
+    } finally {
+      setSaving(false);
+    }
   }
 
   function handleDelete() {
@@ -47,8 +56,14 @@ export default function LogEntryScreen() {
         style: 'destructive',
         onPress: async () => {
           setDeleting(true);
-          await deleteSession(id);
-          router.replace('/log');
+          setActionError(null);
+          try {
+            await deleteSession(id);
+            router.replace('/log');
+          } catch {
+            setActionError('This entry couldn’t be deleted.');
+            setDeleting(false);
+          }
         },
       },
     ]);
@@ -102,6 +117,7 @@ export default function LogEntryScreen() {
           </ScrollView>
 
           <View style={styles.actions}>
+            {actionError ? <Text style={styles.actionError}>{actionError}</Text> : null}
             <Button
               label={deleting ? 'Deleting...' : 'Delete Entry'}
               variant="danger"
@@ -154,5 +170,11 @@ const styles = StyleSheet.create({
   },
   actions: {
     paddingVertical: 16,
+    gap: 12,
+  },
+  actionError: {
+    fontSize: 14,
+    color: TEXT_MUTED,
+    textAlign: 'center',
   },
 });
